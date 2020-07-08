@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springboot.schedule.springbootschedule.mapper.ScheduleCronMapper">
+
+    <select id="findAll" resultType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        select
+            ID ,
+            CRON_KEY cronKey,
+            CRON_EXPRESSION cronExpression,
+            TASK_EXPLAIN taskExplain,
+            STATUS,
+            CREATE_TIME createTime,
+            UPDATE_TIME updateTime
+        from SCHEDULE_CRON
+    </select>
+
+    <select id="findAllActive" resultType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        select
+            ID ,
+            CRON_KEY cronKey,
+            CRON_EXPRESSION cronExpression,
+            TASK_EXPLAIN taskExplain,
+            STATUS,
+            CREATE_TIME createTime,
+            UPDATE_TIME updateTime
+        from SCHEDULE_CRON
+        where STATUS = '1'
+    </select>
+
+    <select id="findByCronId" resultType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        select
+            ID ,
+            CRON_KEY cronKey,
+            CRON_EXPRESSION cronExpression,
+            TASK_EXPLAIN taskExplain,
+            STATUS,
+            CREATE_TIME createTime,
+            UPDATE_TIME updateTime
+        from SCHEDULE_CRON
+        where ID = #{id}
+    </select>
+
+    <select id="findByCronIdActive" resultType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        select
+            ID ,
+            CRON_KEY cronKey,
+            CRON_EXPRESSION cronExpression,
+            TASK_EXPLAIN taskExplain,
+            STATUS,
+            CREATE_TIME createTime,
+            UPDATE_TIME updateTime
+        from SCHEDULE_CRON
+        where STATUS = '1' AND ID = #{id}
+    </select>
+
+
+
+    <select id="findByCronKey" resultType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        select
+            ID ,
+            CRON_KEY cronKey,
+            CRON_EXPRESSION cronExpression,
+            TASK_EXPLAIN taskExplain,
+            STATUS,
+            CREATE_TIME createTime,
+            UPDATE_TIME updateTime
+        from SCHEDULE_CRON
+        where CRON_KEY = #{cronKey}
+    </select>
+
+
+    <select id="findByCronKeyActive" resultType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        select
+            ID ,
+            CRON_KEY cronKey,
+            CRON_EXPRESSION cronExpression,
+            TASK_EXPLAIN taskExplain,
+            STATUS,
+            CREATE_TIME createTime,
+            UPDATE_TIME updateTime
+        from SCHEDULE_CRON
+        where STATUS = '1' and CRON_KEY = #{cronKey}
+    </select>
+
+    <insert id="insertScheduleCron" parameterType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        INSERT INTO
+            SCHEDULE_CRON
+        (CRON_KEY, CRON_EXPRESSION, TASK_EXPLAIN, STATUS, CREATE_TIME)
+        VALUES
+        (#{cronKey, jdbcType = VARCHAR}, #{cronExpression, jdbcType = VARCHAR}, #{taskExplain, jdbcType = VARCHAR}, #{status, jdbcType = VARCHAR}, SYSDATE)
+    </insert>
+
+    <delete id="delByKey" parameterType="string">
+        DELETE FROM SCHEDULE_CRON WHERE CRON_KEY = #{cronKey}
+    </delete>
+
+    <update id="pauseTask" parameterType="string">
+        UPDATE SCHEDULE_CRON
+        SET STATUS = '0'
+        WHERE CRON_KEY = #{cronKey}
+    </update>
+
+    <update id="restartTask" parameterType="string">
+        UPDATE SCHEDULE_CRON
+        SET STATUS = '1'
+        WHERE CRON_KEY = #{cronKey}
+    </update>
+
+    <update id="updateTask" parameterType="com.springboot.schedule.springbootschedule.models.ScheduleCron">
+        UPDATE SCHEDULE_CRON
+        SET
+            CRON_EXPRESSION = #{cronExpression, jdbcType = VARCHAR},
+            TASK_EXPLAIN = #{taskExplain, jdbcType = VARCHAR},
+            STATUS #{status, jdbcType = VARCHAR},
+            UPDATE_TIME = SYSDATE
+        WHERE CRON_KEY = #{cronKey}
+    </update>
+
+
+</mapper>
