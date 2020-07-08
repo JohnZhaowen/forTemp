@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>任务管理</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="/css/font.css">
+        <link rel="stylesheet" href="/css/xadmin.css">
+        <script src="/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="/js/xadmin.js"></script>
+    </head>
+    
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+                <a href="">首页</a>
+                <a>
+                    <cite>任务列表</cite></a>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <table class="layui-table" lay-data="{url:'/mdi/task/allTasks',page:false,toolbar: '#toolbarDemo',id:'tasks'}" lay-filter="tasks">
+                                <thead>
+                                    <tr>
+                                        <th lay-data="{type:'checkbox'}">ID</th>
+                                        <th lay-data="{field:'id', width:80}">ID</th>
+                                        <th lay-data="{field:'cronKey', width:180}">任务键</th>
+                                        <th lay-data="{field:'taskExplain', width:180, edit: 'text'}">任务名称</th>
+                                        <th lay-data="{field:'cronExpression', edit: 'text', width: 180}">cron表达式</th>
+                                        <th lay-data="{field:'status', width: 120, templet: '#status'}">任务状态</th>
+                                        <th lay-data="{field:'createTime'}">创建时间</th>
+                                        <th lay-data="{field:'updateTime'}">更新时间</th>
+                                        <th lay-data="{templet: '#operation'}">操作</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script type="text/html" id="toolbarDemo">
+        <div class = "layui-btn-container" > 
+            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" > 获取选中行数据 </button>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button > 
+            <button class = "layui-btn layui-btn-sm" lay-event = "isAll" > 验证是否全选</button>
+        </div > 
+    </script>
+
+    <script>
+        layui.use('form', function(){
+            var form = layui.form
+                ,layer = layui.layer
+            //监听指定开关
+            form.on('switch(statusSwitch)', function(data){
+                var table = layui.table;
+                var switchElem = $(data.elem);
+                var tdElem = switchElem.closest('td');
+                var trElem = tdElem.closest('tr');
+                var tableView = trElem.closest('.layui-table-view');
+                table.cache[tableView.attr('lay-id')][trElem.data('index')][tdElem.data('field')] = status;
+            });
+        });
+    </script>
+
+    <script type="text/html" id="status">
+        <input type = "checkbox" name = "status" value = "{{d.status}}" lay-skin = "switch"lay-text = "开启|停用" lay-filter = "statusSwitch" {{ d.status == 1 ? 'checked': ''}} >
+    </script>
+
+
+    <script type="text/html" id="operation">
+        <a title="修改提交" onclick="member_del(this,'{{d.id}}')" href="javascript:;">
+            <i class="layui-icon">&#xe669;</i>
+        </a>
+        &nbsp;&nbsp;
+        <a title="删除" onclick="member_del(this,'{{d.id}}')" href="javascript:;">
+            <i class="layui-icon">&#xe640;</i>
+        </a>
+    </script>
+    <script>
+        function member_del(obj, id) {
+            console.log(obj)
+            console.log(id)
+            layer.confirm('确认要删除吗？',function(index){
+                //发异步删除数据
+                $(obj).parents("tr").remove();
+                layer.msg('已删除!',{icon:1,time:1000});
+            });
+        }
+    </script>
+
+    <script>layui.use('table',
+        function() {
+            var table = layui.table;
+
+            //监听单元格编辑
+            table.on('edit(tasks)',
+            function(obj) {
+                var value = obj.value //得到修改后的值
+                ,
+                data = obj.data //得到所在行所有键值
+                ,
+                field = obj.field; //得到字段
+                layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+            });
+
+            //头工具栏事件
+            table.on('toolbar(tasks)',
+            function(obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：' + data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+                };
+            });
+        });</script>
+    <script>var _hmt = _hmt || []; (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();</script>
+
+</html>
